@@ -29,9 +29,17 @@ Route::get('dashboard', 'App\Http\Controllers\Frontend\FrontendController@index'
 */
 Route::group(['namespace' => 'App\Http\Controllers\Frontend', 'as' => 'frontend.'], function () {
     Route::get('/', 'FrontendController@index')->name('index');
+    Route::get('/upload', 'FrontendController@upload')->name('upload');
     Route::get('home', 'FrontendController@index')->name('home');
     Route::get('privacy', 'FrontendController@privacy')->name('privacy');
     Route::get('terms', 'FrontendController@terms')->name('terms');
+    Route::get("cases/index_data", ['as' => "cases.index_data", 'uses' => "FrontendController@index_data"]);
+    Route::get("cases/index_list", ['as' => "cases.index_list", 'uses' => "FrontendController@index_list"]);
+    Route::get("cases/index_list_unit", ['as' => "cases.index_list_unit", 'uses' => "FrontendController@index_list_unit"]);
+    Route::get("cases/index_list_unit_division", ['as' => "cases.index_list_unit_division", 'uses' => "FrontendController@index_list_unit_division"]);
+    Route::get("cases/index_list_code", ['as' => "cases.index_list_code", 'uses' => "FrontendController@index_list_code"]);
+    
+
 
     Route::group(['middleware' => ['auth']], function () {
         /*
@@ -144,3 +152,5 @@ Route::group(['namespace' => 'App\Http\Controllers\Backend', 'prefix' => 'admin'
     Route::patch("$module_name/{id}/block", ['as' => "$module_name.block", 'uses' => "$controller_name@block", 'middleware' => ['permission:block_users']]);
     Route::patch("$module_name/{id}/unblock", ['as' => "$module_name.unblock", 'uses' => "$controller_name@unblock", 'middleware' => ['permission:block_users']]);
 });
+
+

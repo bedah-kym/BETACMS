@@ -1,4 +1,4 @@
-@extends('backend.layouts.app')
+@extends('ajira.layouts.app')
 
 @section('title') {{ __($module_action) }} {{ __($module_title) }} @endsection
 
