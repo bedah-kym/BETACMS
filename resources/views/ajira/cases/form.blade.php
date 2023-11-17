@@ -98,6 +98,14 @@
         </div>
     </div>
 </div>
+
+
+<div class='form-group'>
+                                <label class='col-xs-5 control-label' for="submit"> </label>
+                                <div class='col-md-7'>
+                                    <button type="button" name="send_request2" id="send_request2" class="btn btn-md btn-primary link_button large"><i class="fa fa-save"></i> Send Request</button>
+                                </div>
+                            </div> 
 <!-- Select2 Library -->
 <x-library.select2 />
 
@@ -215,23 +223,14 @@
         }
     });
     $("#files").fileinput({
-        uploadUrl: "http://localhost/file-upload.php",
-        // enableResumableUpload: true,
-        // resumableUploadOptions: {
-        //    // uncomment below if you wish to test the file for previous partial uploaded chunks
-        //    // to the server and resume uploads from that point afterwards
-        //    // testUrl: "http://localhost/test-upload.php"
-        // },
-        uploadExtraData: {
-            'uploadToken': 'SOME-TOKEN', // for access control / security 
-        },
-        maxFileCount: 5,
-        allowedFileTypes: ['pdf'],    // allow only images
-        showCancel: true,
+        // theme: 'fa',
+        showUpload: false,
+        showBrowse: true,
+        showRemove: false,
+        showCaption: false,
+        showDrag: false,
+        showZoom: false,
         initialPreviewAsData: true,
-        overwriteInitial: false,
-        // initialPreview: [],          // if you have previously uploaded preview files
-        // initialPreviewConfig: [],    // if you have previously uploaded preview files
         theme: 'fa5',
         deleteUrl: "http://localhost/file-delete.php"
     }).on('fileuploaded', function(event, previewId, index, fileId) {

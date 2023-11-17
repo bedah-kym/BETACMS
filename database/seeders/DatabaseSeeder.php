@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Database\Seeders\CaseTypesTableSeeder;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
 
@@ -14,7 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         Schema::disableForeignKeyConstraints();
 
-        $this->call(AuthTableSeeder::class);
+        $this->call(CaseTypesTableSeeder::class);
 
         Schema::enableForeignKeyConstraints();
     }

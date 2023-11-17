@@ -3,7 +3,11 @@
 namespace App\Http\Controllers\Frontend;
 
 
-use App\Http\Controllers\Controller; 
+use App\Http\Controllers\Controller;
+use App\Models\CaseType;
+use App\Models\Subhead;
+use App\Models\Unit;
+use App\Models\UnitDivision;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
@@ -69,7 +73,7 @@ class FrontendController extends Controller
 
         $$module_name = $module_model::paginate();
 
-        Log::info("'$title' viewed by User:".auth()->user()->name.'(ID:'.auth()->user()->id.')');
+        // Log::info("'$title' viewed by User:".auth()->user()->name.'(ID:'.auth()->user()->id.')');
 
         return view(
             "ajira.cases.index",
@@ -123,19 +127,14 @@ class FrontendController extends Controller
             return response()->json([]);
         }
 
-        // $query_data = $module_model::where('name', 'LIKE', "%$term%")->orWhere('email', 'LIKE', "%$term%")->limit(10)->get();
-        $query_data=$this->data;
-        $filteredArray = Arr::where($query_data, function ($value, $key) use($term) {
-            // return $value['subhead_name'] == $term;
-            return str_contains(Str::lower($value['subhead_name']), Str::lower($term));
-        });
-
+        $query_data = Subhead::where('name', 'LIKE', "%$term%")->get();
+      
         $$module_name = [];
 
-        foreach ($filteredArray as $row) {
+        foreach ($query_data as $row) {
             $$module_name[] = [
-                'id' => $row['subhead_id'],
-                'text' => $row['subhead_name'],
+                'id' => $row['cts_subhead_id'],
+                'text' => $row['name'],
             ];
         }
 
@@ -165,49 +164,15 @@ class FrontendController extends Controller
             return response()->json([]);
         }
 
-        // $query_data = $module_model::where('name', 'LIKE', "%$term%")->orWhere('email', 'LIKE', "%$term%")->limit(10)->get();
-        $query_data=$this->data;
-
-        $units = Arr::where($query_data, function ($value, $key) use($lawcourt) {
-             return $value['subhead_id'] == $lawcourt;
-        });
-
-        // $collection = collect($units)->filter(function ($item) use ($term) {
-        //     // dd($item['units']);
-        //     $exist=false;
-        //     foreach($item['units'] as $unit)
-        //     {
-        //         if(stripos($unit['unit_name'], $term))
-        //         {
-        //             $exist= true;
-        //             break; 
-        //         }
-        //     }
-        //     return $exist;
-        // });
-
-        // dd($collection );
-        $filteredArray = Arr::where($units, function ($value, $key) use($lawcourt, $term) {
-            $exist=false;
-            foreach($value['units'] as $unit)
-            {
-                if(str_contains(Str::lower($unit['unit_name']), Str::lower($term)))
-                {
-                    $exist= true;
-                    break; 
-                }
-            }
-            return $exist;
-            // return str_contains(Str::lower($value['units']['unit_name']), Str::lower($term));
-        });
-
+   
+        $query_data = Unit::where('name', 'LIKE', "%$term%")->where('cts_subhead_id', '=', $lawcourt )->get();
+ 
         $$module_name = [];
 
-        dd($filteredArray[0]);
-        foreach ($filteredArray[0]['units'] as $row) {
+        foreach ($query_data as $row) { 
             $$module_name[] = [
-                'id' => $row['unit_id'],
-                'text' => $row['unit_name'],
+                'id' => $row['cts_unit_id'],
+                'text' => $row['name'],
             ];
         }
 
@@ -228,26 +193,30 @@ class FrontendController extends Controller
         $module_action = 'List';
 
         $page_heading = label_case($module_title);
-
+     
         $term = trim($request->q);
+        $unit_id = trim($request->unit);
+        $lawcourt = trim($request->lawcourt);
 
         if (empty($term)) {
             return response()->json([]);
         }
+        $$module_name = [];
 
-        // $query_data = $module_model::where('name', 'LIKE', "%$term%")->orWhere('email', 'LIKE', "%$term%")->limit(10)->get();
-        $query_data=$this->data;
-        $filteredArray = Arr::where($query_data, function ($value, $key) use($term) {
-            // return $value['subhead_name'] == $term;
-            return str_contains(Str::lower($value['subhead_name']), Str::lower($term));
-        });
+        // $table->string('name');
+        // $table->integer('cts_unit_id'); 
+        // $table->integer('cts_division_id');
+        // $table->integer('cts_unit_division_id');
+
+        $query_data = UnitDivision::where('name', 'LIKE', "%$term%")->where('cts_unit_id', '=', $unit_id )->get(); 
+ 
 
         $$module_name = [];
 
-        foreach ($filteredArray as $row) {
+        foreach ($query_data as $row) {
             $$module_name[] = [
-                'id' => $row['subhead_id'],
-                'text' => $row['subhead_name'],
+                'id' => $row['cts_unit_division_id'],
+                'text' => $row['name'],
             ];
         }
 
@@ -271,24 +240,36 @@ class FrontendController extends Controller
         $page_heading = label_case($module_title);
 
         $term = trim($request->q);
+        $unit_division_id = trim($request->unit_division);
+        $unit_id = trim($request->unit);
+
+ 
 
         if (empty($term)) {
             return response()->json([]);
         }
 
-        // $query_data = $module_model::where('name', 'LIKE', "%$term%")->orWhere('email', 'LIKE', "%$term%")->limit(10)->get();
-        $query_data=$this->data;
-        $filteredArray = Arr::where($query_data, function ($value, $key) use($term) {
-            // return $value['subhead_name'] == $term;
-            return str_contains(Str::lower($value['subhead_name']), Str::lower($term));
-        });
+
+        // $table->string('case_type_name');
+        // $table->string('code');
+        // $table->string('category_name');
+        // $table->integer('cts_case_type_id'); 
+        // $table->integer('cts_case_category_id');
+
+        // $table->integer('cts_unit_div_case_type_id'); 
+        // $table->integer('cts_unit_division_id'); 
+
+        
+
+        $query_data = CaseType::where('category_name', 'LIKE', "%$term%")->orWhere('case_type_name', 'LIKE', "%$term%")->orWhere('code', 'LIKE', "%$term%")->where('cts_unit_division_id', '=', $unit_division_id )->get();
+    
 
         $$module_name = [];
 
-        foreach ($filteredArray as $row) {
+        foreach ($query_data as $row) { 
             $$module_name[] = [
-                'id' => $row['subhead_id'],
-                'text' => $row['subhead_name'],
+                'id' => $row['cts_case_category_id'],
+                'text' => $row['category_name'],
             ];
         }
 
