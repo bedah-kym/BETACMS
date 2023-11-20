@@ -82,7 +82,7 @@ class CaseTypesTableSeeder extends Seeder
             // +"subhead_name": "Supreme Court Building"
 
 
-            $ajira_unit_division_id = CaseCategory::updateOrCreate(
+            $ajira_unit_division_id2 = CaseCategory::updateOrCreate(
                 [
                     'cts_case_category_id'   => $unit_division_case_type->category_id,
                     'cts_unit_division_id'=> $unit_division_case_type->unit_division_id,
@@ -94,6 +94,7 @@ class CaseTypesTableSeeder extends Seeder
                     'category_name' => trim($unit_division_case_type->category_name)
                 ],
             );
+            var_dump($ajira_unit_division_id2 );
             // dd($ajira_unit_division_id);
         }
         // dd($response);
@@ -104,8 +105,9 @@ class CaseTypesTableSeeder extends Seeder
         $url=env('CTS_URL_END_POINT');
         $res = $this->guzzle($url."Oauth2/ajira/get_unit_division_list/" . $unit_id, []);
         // echo $url."Oauth2/ajira/get_law_courts";
-        echo $res;
+        // echo $res;
         // die;
+        
         $unit_divisions = json_decode($res);
         if(!empty($unit_divisions) and is_array($unit_divisions))
         foreach ($unit_divisions as $unit_division)
@@ -128,6 +130,7 @@ class CaseTypesTableSeeder extends Seeder
                     'cts_division_id' => $unit_division->division_id
                 ],
             );
+            var_dump($ajira_unit_division_id );
             $res = $this->get_LawCourts_units_division_case_types($unit_division->unit_division_id, $ajira_unit_division_id);
         }
         // dd($response);
@@ -140,8 +143,9 @@ class CaseTypesTableSeeder extends Seeder
         $url=env('CTS_URL_END_POINT');
         $res = $this->guzzle($url."Oauth2/ajira/get_lawcourt_unit/" . $subhead_id, []);
         // echo $url."Oauth2/ajira/get_law_courts";
-        echo $res;
+        // echo $res;
         // die;
+        
         $units = json_decode($res);
         if(!empty($units) and is_array($units))
         foreach ($units as $unit)
@@ -156,6 +160,7 @@ class CaseTypesTableSeeder extends Seeder
                     'cts_subhead_id' => $unit->subhead_id
                 ],
             );
+            var_dump($ajira_unit_id );
             $res = $this->get_LawCourts_units_division($unit->unit_id, $ajira_unit_id, $ajira_subhead_id);
         }
         // dd($response);
@@ -166,7 +171,7 @@ class CaseTypesTableSeeder extends Seeder
         $url=env('CTS_URL_END_POINT');
         $res = $this->guzzle($url."Oauth2/ajira/get_law_courts", []);
         // echo $url."Oauth2/ajira/get_law_courts";
-        echo $res;
+        // echo $res;
         // die;
         $subheads = json_decode($res);
         if(!empty($subheads) and is_array($subheads))
@@ -183,6 +188,7 @@ class CaseTypesTableSeeder extends Seeder
                     'name' => $subhead->subhead_name
                 ],
             );
+            var_dump($subhead_id );
 
             $res = $this->get_LawCourts_units($subhead->subhead_id, $subhead_id);
         }
