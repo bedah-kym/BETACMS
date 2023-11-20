@@ -15,7 +15,7 @@
             <div class="flex-1 flex items-center justify-center content-center sm:items-stretch sm:justify-start">
                 <div class="flex-shrink-0 flex items-center">
                     <a href="/">
-                        <img class="block lg:hidden h-10 w-auto" src="{{asset('img/logo-with-text.jpg')}}" alt="{{ app_name() }}">
+                        <img class="block lg:hidden h-10 w-auto" src="{{asset('img/main_logo.png')}}" alt="{{ app_name() }}">
                     </a>
                     <a href="/">
                         <img class="hidden lg:block h-12 w-auto" src="{{asset('img/logo-with-text-dark.png')}}" alt="{{ app_name() }}">

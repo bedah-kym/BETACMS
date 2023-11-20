@@ -53,7 +53,7 @@
             $required = "required";
             ?>
             {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
-            {{ html()->select($field_name, isset($$module_name_singular)?optional($$module_name_singular->$field_relation)->pluck('name', 'id'):'')->placeholder($field_placeholder)->class('form-control select2-code')->attributes(["$required"]) }}
+            {{ html()->select($field_name, isset($$module_name_singular)?optional($$module_name_singular->$field_relation)->pluck('name', 'id'):'')->placeholder($field_placeholder)->class('form-control select2-code')->attributes(["$required", "onchange='validate()'"]) }}
         </div>
     </div>
     <div class="col-4">
@@ -65,7 +65,7 @@
             $required = "required";
             ?>
             {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
-            {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+            {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required", "onchange='validate()'"]) }}
         </div>
     </div>
     <div class="col-4">
@@ -75,26 +75,34 @@
             $field_lable = __("Year");
             $field_placeholder = __("Select an option");
             $required = "required";
+
+            $year=date('Y');
+            $select_options=[];
+            for($i=$year; $i>0; $i--)
+            {
+                $select_options[$i] = $i;
+
+                // array_push($select_options,array($i=>$i));
+            }
+
+            // $select_options = [
+            //     'Article' => 'Article',
+            //     'Feature' => 'Feature',
+            //     'News' => 'News',
+            // ];
+            // dd($select_options)
             ?>
             {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
-            {{ html()->select($field_name, isset($$module_name_singular)?optional($$module_name_singular->$field_relation)->pluck('name', 'id'):'')->placeholder($field_placeholder)->class('form-control select2-category')->attributes(["$required"]) }}
+            {{ html()->select($field_name, $select_options)->placeholder($field_placeholder)->class('form-control select2-year')->attributes(["$required", "onchange='validate()'"]) }}
         </div>
     </div>
 </div>
 
-<div class="row mb-3">
+<div class="row mb-3 file_upload_canvas hide" style="display: none;">
     <div class="col-12"> 
         <div class="form-group">
-            <?php
-            $field_name = 'files';
-            $field_lable = __("Select Files");
-            $field_placeholder = $field_lable;
-            $required = "required";
-            ?>
-            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
-            {{ html()->file($field_name)->class('form-control')->attributes(["$required", "multiple"]) }}
-
-            <!-- <input id="file-multiple-input" name="avatar" multiple="" type="file"> -->
+            <label for="files[]">Select Files</label> <span class="text-danger">*</span>
+            <input class="form-control" type="file" name="files[]" id="files" required="" multiple="" accept="application/pdf" data-min-file-count="1">
         </div>
     </div>
 </div>
@@ -102,27 +110,14 @@
 
 <div class='form-group'>
                                 <label class='col-xs-5 control-label' for="submit"> </label>
-                                <div class='col-md-7'>
-                                    <button type="button" name="send_request2" id="send_request2" class="btn btn-md btn-primary link_button large"><i class="fa fa-save"></i> Send Request</button>
+                                <div class='col-md-12' style="text-align: center;">
+                                    <button type="button" name="send_request2" id="send_request2" disabled class="btn btn-md btn-primary link_button large file_upload_button"><i class="fa fa-save"></i> Upload Files</button>
                                 </div>
                             </div> 
 <!-- Select2 Library -->
 <x-library.select2 />
 
 @push('after-styles')
-<!-- File Manager -->
-<link rel="stylesheet" href="{{ asset('vendor/file-manager/css/file-manager.css') }}">
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-lite.min.css" rel="stylesheet">
-
-<!-- bootstrap 5.x or 4.x is supported. You can also use the bootstrap css 3.3.x versions -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" crossorigin="anonymous">
-
-<!-- default icons used in the plugin are from Bootstrap 5.x icon library (which can be enabled by loading CSS below) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.min.css" crossorigin="anonymous">
-
-<!-- alternatively you can use the font awesome icon library if using with `fas` theme (or Bootstrap 4.x) by uncommenting below. -->
-<!-- link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.3/css/all.css" crossorigin="anonymous" -->
 
 <!-- the fileinput plugin styling CSS file -->
 <link href="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
@@ -164,94 +159,56 @@
     This must be loaded before fileinput.min.js -->
 <script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/js/plugins/sortable.min.js" type="text/javascript"></script>
 
-<!-- bootstrap.bundle.min.js below is needed if you wish to zoom and preview file content in a detail modal
-    dialog. bootstrap 5.x or 4.x is supported. You can also use the bootstrap js 3.3.x versions. -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-
+<
 <!-- the main fileinput plugin script JS file -->
 <script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/js/fileinput.min.js"></script>
 
 <!-- following theme script is needed to use the Font Awesome 5.x theme (`fa5`). Uncomment if needed. -->
-<!-- script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/themes/fa5/theme.min.js"></script -->
-
-<!-- optionally if you need translation for your language then include the locale file as mentioned below (replace LANG.js with your language locale) -->
-<script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/js/locales/LANG.js"></script>
-<script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-lite.min.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/themes/fa5/theme.min.js"></script>
 <script type="module">
-    // Define function to open filemanager window
-    var lfm = function(options, cb) {
-        var route_prefix = (options && options.prefix) ? options.prefix : '/laravel-filemanager';
-        window.open(route_prefix + '?type=' + options.type || 'file', 'FileManager', 'width=900,height=600');
-        window.SetUrl = cb;
-    };
-
-    // Define LFM summernote button
-    var LFMButton = function(context) {
-        var ui = $.summernote.ui;
-        var button = ui.button({
-            contents: '<i class="note-icon-picture"></i> ',
-            tooltip: 'Insert image with filemanager',
-            click: function() {
-
-                lfm({
-                    type: 'image',
-                    prefix: '/laravel-filemanager'
-                }, function(lfmItems, path) {
-                    lfmItems.forEach(function(lfmItem) {
-                        context.invoke('insertImage', lfmItem.url);
-                    });
-                });
-
-            }
-        });
-        return button.render();
-    };
-
-    $('#content').summernote({
-        height: 120,
-        toolbar: [
-            ['style', ['style']],
-            ['font', ['fontname', 'fontsize', 'bold', 'underline', 'clear']],
-            ['color', ['color']],
-            ['para', ['ul', 'ol', 'paragraph']],
-            ['table', ['table']],
-            ['insert', ['link', 'lfm', 'video']],
-            ['view', ['codeview', 'undo', 'redo', 'help']],
-        ],
-        buttons: {
-            lfm: LFMButton
-        }
-    });
+    
     $("#files").fileinput({
-        // theme: 'fa',
-        showUpload: false,
-        showBrowse: true,
-        showRemove: false,
-        showCaption: false,
-        showDrag: false,
-        showZoom: false,
-        initialPreviewAsData: true,
         theme: 'fa5',
-        deleteUrl: "http://localhost/file-delete.php"
+        showUpload: false,
+        initialPreviewAsData: true,
     }).on('fileuploaded', function(event, previewId, index, fileId) {
         console.log('File Uploaded', 'ID: ' + fileId + ', Thumb ID: ' + previewId);
     }).on('fileuploaderror', function(event, data, msg) {
         console.log('File Upload Error', 'ID: ' + data.fileId + ', Thumb ID: ' + data.previewId);
     }).on('filebatchuploadcomplete', function(event, preview, config, tags, extraData) {
         console.log('File Batch Uploaded', preview, config, tags, extraData);
-    });
+    }).on('filebatchselected', function(event, files) {
+    console.log('File batch selected triggered');
+    $("#send_request2").prop("disabled", false)
+    }).on('filecleared', function(event) {
+    console.log("filecleared");
+    $("#send_request2").prop("disabled", true)
+
+});
 
 </script>
 
 
-</script>
 
-<script type="module" src="{{ asset('vendor/laravel-filemanager/js/stand-alone-button.js') }}"></script>
-<script type="module">
-    $('#button-image').filemanager('image');
+<script>
+    function validate()
+    {
+        var code=$("#code").val()
+        var year=$("#year").val()
+        var case_index=$("#case_index").val()
+        if(code!="" && case_index!="" && year!="")
+        {
+            // $("#send_request2").prop("disabled", false)
+            $(".file_upload_canvas").css("display", 'block')
+        }
+        else
+        {
+            $("#send_request2").prop("disabled", true)
+            $(".file_upload_canvas").css("display", 'none')
+        }
+    }
 </script>
-
-<script type="module">
+<script type="module"> 
     $(document).ready(function() {
         $(document).on('select2:open', () => {
             document.querySelector('.select2-search__field').focus();
@@ -261,7 +218,6 @@
         $('.select2-law_court').select2({
             theme: "bootstrap4",
             placeholder: '@lang("Select an option")',
-            minimumInputLength: 2,
             allowClear: true,
             ajax: {
                 url: '{{route("frontend.cases.index_list")}}',
@@ -284,7 +240,7 @@
         $('.select2-unit').select2({
             theme: "bootstrap4",
             placeholder: '@lang("Select an option")',
-            minimumInputLength: 2,
+            // minimumInputLength: 2,
             allowClear: true,
             ajax: {
                 url: '{{route("frontend.cases.index_list_unit")}}',
@@ -308,11 +264,12 @@
         $('.select2-unit_division').select2({
             theme: "bootstrap4",
             placeholder: '@lang("Select an option")',
-            minimumInputLength: 2,
+            // minimumInputLength: 2,
             allowClear: true,
             ajax: {
                 url: '{{route("frontend.cases.index_list_unit_division")}}',
                 dataType: 'json',
+
                 data: function(params) {
                     return {
                         lawcourt:$('#law_court').val(),
@@ -332,7 +289,7 @@
         $('.select2-code').select2({
             theme: "bootstrap4",
             placeholder: '@lang("Select an option")',
-            minimumInputLength: 2,
+            // minimumInputLength: 2,
             allowClear: true,
             ajax: {
                 url: '{{route("frontend.cases.index_list_code")}}',
@@ -353,6 +310,78 @@
             }
         });
 
+        $('.select2-year').select2({
+            theme: "bootstrap4",
+            placeholder: '@lang("Select an Year")',
+        });
+
+        
+        
+        $('.select2-law_court').on('change', function(){
+            $('.select2-unit').trigger('change')
+        })
+
+        $('.select2-unit').on('change', function(){
+            $('.select2-unit_division').trigger('change')
+        })
+
+
+        $('.select2-law_court').trigger('change')
+
+
+        $('#send_request2').on('click', function(e){
+            e.preventDefault();
+            // var data = new FormData($('.upload-file-form'))[0];
+            var data = new FormData($('.upload-file-form')[0]);
+ 
+                    $.ajax({
+                        type: "POST",
+                        async: true,
+                        url: '{{route("frontend.cases.upload_files")}}',
+                        beforeSend: function ()
+                        { 
+                            $(".placeholder").removeClass('hide');
+                        },
+                        data: data,
+                        processData: false,
+                        contentType: false,
+                        success: function (data)
+                        {
+                            var obj = data;//JSON.parse(data);
+                            $.each(obj, function (key, value)
+                            {
+                                if (key === 'success')
+                                {
+                                    window.location.href="/";
+                                } else if (key === 'csrfName')
+                                {
+                                    $("input[name='" + obj.csrfName + "']").val(obj.csrfHash);
+                                }
+                                if (key === 'error')
+                                {
+                                    $(".case_parties_response_div").html("<center>" + value + "</center>");
+                                    $(".case_parties_response_div").addClass("error");
+                                } else if (key === 'validation_error')
+                                {
+                                    $.each(value, function (key1, value1)
+                                    {
+                                        $("#" + key1).addClass("ErrorField");
+                                        $("#" + key1 + "-error").html(value1);
+                                    });
+                                }
+                            });
+                        }, //
+                        error: function (xhr)
+                        {                          //
+                            ok = false; //
+                        },
+                        complete: function ()
+                        {
+                            $(".placeholder").addClass('hide');
+                        }
+                    });
+        })
+        validate();
 
     });
 </script>

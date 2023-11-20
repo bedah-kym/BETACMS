@@ -1,31 +1,21 @@
-@extends ('backend.layouts.app')
+@extends ('ajira.layouts.app')
 
 @section('title') {{ __($module_action) }} {{ __($module_title) }} @endsection
 
-@section('breadcrumbs')
-<x-backend-breadcrumbs>
-    <x-backend-breadcrumb-item route='{{route("backend.$module_name.index")}}' icon='{{ $module_icon }}'>
-        {{ __($module_title) }}
-    </x-backend-breadcrumb-item>
-
-    <x-backend-breadcrumb-item type="active">{{ __($module_action) }}</x-backend-breadcrumb-item>
-</x-backend-breadcrumbs>
-@endsection
 
 @section('content')
-<x-backend.layouts.show :data="$user">
+<x-frontend.layouts.show :data="$case">
 
     <x-backend.section-header>
-        <i class="{{ $module_icon }}"></i> {{ __($module_title) }} <small class="text-muted">{{ __($module_action) }}</small>
+        <i class="{{ $module_icon }}"></i> Case Files <small class="text-muted">List</small>
 
         <x-slot name="subtitle">
-            @lang(":module_name Management Dashboard", ['module_name'=>Str::title($module_name)])
+            Show all the files uploaded for the case
         </x-slot>
         <x-slot name="toolbar">
             <x-backend.buttons.return-back />
-            <a href="{{ route('backend.users.index') }}" class="btn btn-primary m-1" data-toggle="tooltip" title="List"><i class="fas fa-list"></i> List</a>
-            <a href="{{ route('backend.users.profile', $user->id) }}" class="btn btn-primary m-1" data-toggle="tooltip" title="Profile"><i class="fas fa-user"></i> Profile</a>
-            <x-buttons.edit route='{!!route("backend.$module_name.edit", $$module_name_singular)!!}' title="{{__('Edit')}} {{ ucwords(Str::singular($module_name)) }}" />
+            <!-- <a href="" class="btn btn-primary m-1" data-toggle="tooltip" title="List"><i class="fas fa-list"></i> List</a> -->
+            <!-- <a href="" class="btn btn-primary m-1" data-toggle="tooltip" title="Profile"><i class="fas fa-user"></i> Profile</a> -->
         </x-slot>
     </x-backend.section-header>
 
@@ -34,156 +24,127 @@
             <div class="table-responsive">
                 <table class="table table-hover">
                     <tr>
-                        <th>{{ __('labels.backend.users.fields.avatar') }}</th>
-                        <td><img src="{{asset($$module_name_singular->avatar)}}" class="user-profile-image img-fluid img-thumbnail" style="max-height:200px; max-width:200px;" /></td>
+                        <th style="text-align: right">Case Number: </th>
+                        <td><b>{{ $case->case_number }}</b></td>
+                        <th style="text-align: right">Case Types: </th>
+                        <td><b>{{ $case->category_code }}{{ $case->category_name }}</b></td>
                     </tr>
 
                     <tr>
-                        <th>{{ __('labels.backend.users.fields.first_name') }}</th>
-                        <td>{{ $user->first_name }}</td>
-                    </tr>
-                    <tr>
-                        <th>{{ __('labels.backend.users.fields.last_name') }}</th>
-                        <td>{{ $user->last_name }}</td>
-                    </tr>
-
-                    <tr>
-                        <th>{{ __('labels.backend.users.fields.email') }}</th>
-                        <td>{{ $user->email }}</td>
+                        <th style="text-align: right">Division: </th>
+                        <td><b>{{ $case->division_name }}</b></td>
+                
+                        <th style="text-align: right">Unit: </th>
+                        <td><b>{{ $case->unit_name }}</b></td>
                     </tr>
 
-                    <tr>
-                        <th>{{ __('labels.backend.users.fields.mobile') }}</th>
-                        <td>{{ $user->mobile }}</td>
-                    </tr>
-
-                    <tr>
-                        <th>{{ __('labels.backend.users.fields.password') }}</th>
-                        <td>
-                            <a href="{{ route('backend.users.changePassword', $user->id) }}" class="btn btn-outline-primary btn-sm">Change password</a>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th>{{ __('labels.backend.users.fields.social') }}</th>
-                        <td>
-                            <ul class="list-unstyled">
-                                @foreach ($user->providers as $provider)
-                                <li>
-                                    <i class="fab fa-{{ $provider->provider }}"></i> {{ label_case($provider->provider) }}
-                                </li>
-                                @endforeach
-                            </ul>
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th>{{ __('labels.backend.users.fields.status') }}</th>
-                        <td>{!! $user->status_label !!}</td>
-                    </tr>
-
-                    <tr>
-                        <th>{{ __('labels.backend.users.fields.confirmed') }}</th>
-                        <td>
-                            {!! $user->confirmed_label !!}
-                            @if ($user->email_verified_at == null)
-                            <a href="{{route('backend.users.emailConfirmationResend', $user->id)}}" class="btn btn-primary btn-sm mt-1" data-toggle="tooltip" title="Send Confirmation Email"><i class="fas fa-envelope"></i> Send Confirmation Reminder</a>
-                            @endif
-                        </td>
-                    </tr>
-                    <tr>
-                        <th>{{ __('labels.backend.users.fields.roles') }}</th>
-                        <td>
-                            @if($user->getRoleNames()->count() > 0)
-                            <ul>
-                                @foreach ($user->getRoleNames() as $role)
-                                <li>{{ ucwords($role) }}</li>
-                                @endforeach
-                            </ul>
-                            @endif
-                        </td>
-
-                    </tr>
-                    <tr>
-                        <th>{{ __('labels.backend.users.fields.permissions') }}</th>
-                        <td>
-                            @if($user->getAllPermissions()->count() > 0)
-                            <ul>
-                                @foreach ($user->getAllPermissions() as $permission)
-                                <li>{{ $permission->name }}</li>
-                                @endforeach
-                            </ul>
-                            @endif
-                        </td>
-                    </tr>
-
-                    <tr>
-                        <th>{{ __('labels.backend.users.fields.created_at') }}</th>
-                        <td>{{ $user->created_at }}<br><small>({{ $user->created_at->diffForHumans() }})</small></td>
-                    </tr>
-
-                    <tr>
-                        <th>{{ __('labels.backend.users.fields.updated_at') }}</th>
-                        <td>{{ $user->updated_at }}<br /><small>({{ $user->updated_at->diffForHumans() }})</small></td>
-                    </tr>
+                    
 
                 </table>
             </div>
 
             <div class="py-4 text-center">
-                @if ($user->status != 2)
-                <a href="{{route('backend.users.block', $user)}}" class="btn btn-danger mt-1" data-method="PATCH" data-token="{{csrf_token()}}" data-toggle="tooltip" title="{{__('labels.backend.block')}}" data-confirm="Are you sure?"><i class="fas fa-ban"></i> Block</a>
-                @endif
-                @if ($user->status == 2)
-                <a href="{{route('backend.users.unblock', $user)}}" class="btn btn-info mt-1" data-method="PATCH" data-token="{{csrf_token()}}" data-toggle="tooltip" title="{{__('labels.backend.unblock')}}" data-confirm="Are you sure?"><i class="fas fa-check"></i> Unblock</a>
-                @endif
-                <a href="{{route('backend.users.destroy', $user)}}" class="btn btn-danger mt-1" data-method="DELETE" data-token="{{csrf_token()}}" data-toggle="tooltip" title="{{__('labels.backend.delete')}}" data-confirm="Are you sure?"><i class="fas fa-trash-alt"></i> Delete</a>
-                @if ($user->email_verified_at == null)
-                <a href="{{route('backend.users.emailConfirmationResend', $user->id)}}" class="btn btn-primary mt-1" data-toggle="tooltip" title="Send Confirmation Email"><i class="fas fa-envelope"></i> Email Confirmation</a>
-                @endif
-            </div>
-        </div>
-
-        <div class="col">
-            <h4>
-                User Profile
-            </h4>
-            <div class="table-responsive">
-                <table class="table table-responsive-sm table-hover table-bordered">
-                    <?php
-                    $all_columns = $userprofile->getTableColumns();
-                    ?>
-                    <thead>
-                        <tr>
-                            <th scope="col">
-                                <strong>
-                                    Name
-                                </strong>
-                            </th>
-                            <th scope="col">
-                                <strong>
-                                    Value
-                                </strong>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($all_columns as $column)
-                        <tr>
-                            <td>
-                                <strong>
-                                    {{ label_case($column->Field) }}
-                                </strong>
-                            </td>
-                            <td>
-                                {!! show_column_value($$module_name_singular, $column) !!}
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+            <div class="row mb-3">
+                <div class="col-12"> 
+                        <div class="form-group">
+                            <input class="form-control" type="file" name="files[]" id="files" required="" multiple="" accept="application/pdf" data-min-file-count="1">
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</x-backend.layouts.show>
+</x-frontend.layouts.show>
+
+
+@push('after-styles')
+<!-- File Manager -->
+<link rel="stylesheet" href="{{ asset('fileinput/css/fileinput.min.css') }}">
+<!-- default icons used in the plugin are from Bootstrap 5.x icon library (which can be enabled by loading CSS below) -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.min.css" crossorigin="anonymous">
+
+
+
+<style>
+    .note-editor.note-frame :after {
+        display: none;
+    }
+
+    .note-editor .note-toolbar .note-dropdown-menu,
+    .note-popover .popover-content .note-dropdown-menu {
+        min-width: 180px;
+    }
+</style>
+@endpush
+
+@push ('after-scripts')
+<!-- if using RTL (Right-To-Left) orientation, load the RTL CSS file after fileinput.css by uncommenting below -->
+<!-- link href="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/css/fileinput-rtl.min.css" media="all" rel="stylesheet" type="text/css" /-->
+
+
+<!-- buffer.min.js and filetype.min.js are necessary in the order listed for advanced mime type parsing and more correct
+     preview. This is a feature available since v5.5.0 and is needed if you want to ensure file mime type is parsed 
+     correctly even if the local file's extension is named incorrectly. This will ensure more correct preview of the
+     selected file (note: this will involve a small processing overhead in scanning of file contents locally). If you 
+     do not load these scripts then the mime type parsing will largely be derived using the extension in the filename
+     and some basic file content parsing signatures. -->
+
+     <script src="{{ asset('fileinput/js/plugins/buffer.min.js') }}" crossorigin="anonymous"></script>
+     <script src="{{ asset('fileinput/js/plugins/filetype.min.js') }}" crossorigin="anonymous"></script>
+     <script src="{{ asset('fileinput/js/plugins/piexif.min.js') }}" crossorigin="anonymous"></script>
+     <script src="{{ asset('fileinput/js/fileinput.min.js') }}" crossorigin="anonymous"></script>
+     <script src="{{ asset('fileinput/js/locales/LANG.js') }}" crossorigin="anonymous"></script>
+
+
+<script type="module">
+    $(document).ready(function() {
+        $("#files").fileinput({
+            theme: 'fa5', 
+            showRemove: false,
+            showUpload: false,
+            showZoom: true,
+            showDrag: false,
+
+            howClose: false,
+            showCaption: false,
+            showBrowse: false,
+            showUpload:false,
+            showUploadedThumbs: false,
+            showPreview: true,
+
+            initialPreviewAsData: true,
+
+            initialPreviewShowDelete:false,
+            // theme: 'fa5',
+            initialPreview: [
+                    @foreach($files as $f)
+                        '{{ asset('public/storage/'.str_replace('public','',$f->file_path)) }}',
+                    @endforeach
+                ],
+                initialPreviewConfig: [
+                    @foreach($files as $f)
+                    {
+                        type: "pdf",
+                        size: {{$f->size}},
+                        caption: "{{$f->file_name}}",
+                        // url: "{{ asset('public/storage/'.str_replace('public','',$f->file_path)) }}",
+                        width: "50px",
+                        downloadUrl: true,
+                        // deleteUrl: false
+                    },
+                @endforeach
+
+            ],
+
+        }).on('fileuploaded', function(event, previewId, index, fileId) {
+            console.log('File Uploaded', 'ID: ' + fileId + ', Thumb ID: ' + previewId);
+        }).on('fileuploaderror', function(event, data, msg) {
+            console.log('File Upload Error', 'ID: ' + data.fileId + ', Thumb ID: ' + data.previewId);
+        }).on('filebatchuploadcomplete', function(event, preview, config, tags, extraData) {
+            console.log('File Batch Uploaded', preview, config, tags, extraData);
+        });
+    });
+</script>
+@endpush
+
 @endsection

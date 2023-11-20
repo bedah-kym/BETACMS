@@ -20,25 +20,10 @@
                 @can('add_'.$module_name)
                 <x-buttons.create route='{{ route("frontend.upload") }}' title="{{__('Create')}} {{ ucwords(Str::singular($module_name)) }}" >Upload Cases</x-buttons.create>
                 @endcan
-
-                <!-- @can('restore_'.$module_name)
-                <div class="btn-group">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" data-coreui-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-cog"></i>
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item" href='{{ route("backend.$module_name.trashed") }}'>
-                                <i class="fas fa-eye-slash"></i> View trash
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                @endcan -->
             </x-slot>
         </x-backend.section-header>
 
-        <livewire:users-index />
+        <livewire:cases-index />
 
     </div>
     <div class="card-footer">

@@ -38,7 +38,11 @@ Route::group(['namespace' => 'App\Http\Controllers\Frontend', 'as' => 'frontend.
     Route::get("cases/index_list_unit", ['as' => "cases.index_list_unit", 'uses' => "FrontendController@index_list_unit"]);
     Route::get("cases/index_list_unit_division", ['as' => "cases.index_list_unit_division", 'uses' => "FrontendController@index_list_unit_division"]);
     Route::get("cases/index_list_code", ['as' => "cases.index_list_code", 'uses' => "FrontendController@index_list_code"]);
+    Route::post('cases/upload_files', ['as' => "cases.upload_files", 'uses' => "FrontendController@upload_files"]);
     
+
+    Route::get('cases/view_files/{case_number}', ['as' => "cases.view_files", 'uses' => "FrontendController@view_files"]);
+
 
 
     Route::group(['middleware' => ['auth']], function () {

@@ -16,7 +16,7 @@ $notifications_latest = optional($notifications)->take(5);
             <li class="nav-item"><a class="nav-link" href="{{ route('frontend.index') }}" target="_blank">{{app_name()}}&nbsp;<i class="fa-solid fa-arrow-up-right-from-square"></i></a></li>
         </ul>
         <ul class="header-nav ms-auto">
-            <li class="nav-item dropdown">
+            <!-- <li class="nav-item dropdown">
                 <a class="nav-link" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     <i class="fa-regular fa-bell"></i>
                     &nbsp; @if($notifications_count)<span class="badge badge-pill bg-danger">{{$notifications_count}}</span>@endif
@@ -37,11 +37,11 @@ $notifications_latest = optional($notifications)->take(5);
                     @endforeach
                     @endif
                 </div>
-            </li>
+            </li> -->
         </ul>
 
         <ul class="header-nav ms-3">
-            <li class="nav-item dropdown">
+            <!-- <li class="nav-item dropdown">
                 <a class="nav-link" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     <i class="fa-solid fa-language"></i>&nbsp; {{strtoupper(App::getLocale())}}
                 </a>
@@ -55,7 +55,7 @@ $notifications_latest = optional($notifications)->take(5);
                     </a>
                     @endforeach
                 </div>
-            </li>
+            </li> -->
 
             <li class="nav-item dropdown">
                 <a class="nav-link py-0" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
@@ -64,25 +64,25 @@ $notifications_latest = optional($notifications)->take(5);
                     </div>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end pt-0">
-                    <div class="dropdown-header bg-light py-2">
+                    <!-- <div class="dropdown-header bg-light py-2">
                         <div class="fw-semibold">{{ __('Account') }}</div>
-                    </div>
+                    </div> -->
 
-                    <a class="dropdown-item" href="{{route('backend.users.profile', Auth::user()->id)}}">
+                    <!-- <a class="dropdown-item" href="{{route('backend.users.profile', Auth::user()->id)}}">
                         <i class="fa-regular fa-user me-2"></i>&nbsp;{{ Auth::user()->name }}
                     </a>
                     <a class="dropdown-item" href="{{route('backend.users.profile', Auth::user()->id)}}">
                         <i class="fa-regular fa-user me-2"></i>&nbsp;{{ Auth::user()->email }}
-                    </a>
+                    </a> -->
 
                     <div class="dropdown-divider"></div>
 
-                    <a class="dropdown-item" href="{{ route('backend.notifications.index') }}">
+                    <!-- <a class="dropdown-item" href="{{ route('backend.notifications.index') }}">
                         <i class="fa-regular fa-bell me-2"></i>&nbsp;
                         @lang('Notifications') <span class="badge bg-danger ml-auto">{{$notifications_count}}</span>
-                    </a>
+                    </a> -->
 
-                    <div class="dropdown-header bg-light py-2"><strong>@lang('Settings')</strong></div>
+                    <!-- <div class="dropdown-header bg-light py-2"><strong>@lang('Settings')</strong></div> -->
 
                     <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                         <i class="fa-solid fa-right-from-bracket me-2"></i>&nbsp;

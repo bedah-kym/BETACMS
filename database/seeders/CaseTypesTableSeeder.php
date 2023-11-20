@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\CaseCategory;
 use App\Models\CaseType;
 use App\Models\Subhead;
 use App\Models\Unit;
 use App\Models\UnitDivision;
-use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Schema;
 
@@ -22,42 +22,45 @@ class CaseTypesTableSeeder extends Seeder
      */
 
 
-     function guzzle($url, $d):string
-     {
-         $option = array(
-             'body' => json_encode($d),
-             'headers' => array('Authorization' => ' Bearer 0b84a512b6ea40d9aa71027fd3dd46d898e2ae5c')
-         );
-        
-  
-         $client = new \GuzzleHttp\Client();
-         try
-         {
-             $response = $client->request('GET', $url, $option);
-          
-             return $response->getBody();
-         } catch (\GuzzleHttp\Exception\BadResponseException $e)
-         { 
-             $response = $e->getResponse();
-             $responseBodyAsString = $response->getBody()->getContents();
-             return $responseBodyAsString;
-         }
-     }
+    function guzzle($url, $d): string
+    {
+        $option = array(
+            'body' => json_encode($d),
+            'headers' => array('Authorization' => ' Bearer 0b84a512b6ea40d9aa71027fd3dd46d898e2ae5c')
+        );
 
 
-     public function get_LawCourts_units_division_case_types($unit_division_id, $ajira_unit_division_id)
-     {
-         $res=$this->guzzle("http://172.17.0.1/cts/Oauth2/ajira/get_unit_division_case_types/".$unit_division_id, []); 
-         $unit_division_case_types=json_decode($res);
-         foreach($unit_division_case_types as $unit_division_case_type)
-         {
+        $client = new \GuzzleHttp\Client();
+        try
+        {
+            $response = $client->request('GET', $url, $option);
 
-            // dd($unit_division_case_type);
-            // $table->string('case_type_name');
+            return $response->getBody();
+        }
+        catch (\GuzzleHttp\Exception\BadResponseException $e)
+        {
+            $response = $e->getResponse();
+            $responseBodyAsString = $response->getBody()->getContents();
+            return $responseBodyAsString;
+        }
+    }
+
+
+    public function get_LawCourts_units_division_case_types($unit_division_id, $ajira_unit_division_id)
+    {
+        $url=env('CTS_URL_END_POINT');
+        $res = $this->guzzle($url."Oauth2/ajira/get_unit_division_case_categories/" . $unit_division_id, []);
+        $unit_division_case_types = json_decode($res);
+        if(!empty($unit_division_case_types) and is_array($unit_division_case_types))
+        foreach ($unit_division_case_types as $unit_division_case_type)
+        {
+
+            // $table->id();
             // $table->string('code');
             // $table->string('category_name');
-            // $table->integer('cts_case_type_id'); 
-            // $table->integer('cts_case_category_id'); 
+            // $table->integer('cts_case_category_id');  
+            // $table->integer('cts_unit_division_id'); 
+ 
 
             // +"unit_div_case_type_id": 464
             // +"unit_division_id": 52
@@ -75,33 +78,31 @@ class CaseTypesTableSeeder extends Seeder
             // +"subhead_id": 1
             // +"subhead_name": "Supreme Court Building"
 
-            
 
-            $ajira_unit_division_id = CaseType::updateOrCreate(
+            $ajira_unit_division_id = CaseCategory::updateOrCreate(
                 [
-                   'cts_case_category_id'   => $unit_division_case_type->category_id,
-                   'cts_case_type_id'   => $unit_division_case_type->case_type_id
+                    'cts_case_category_id'   => $unit_division_case_type->category_id,
+                    'cts_unit_division_id'=> $unit_division_case_type->unit_division_id,
                 ],
                 [
-
                     'cts_case_category_id'   => $unit_division_case_type->category_id,
-                    'cts_case_type_id'   => $unit_division_case_type->case_type_id,
-
-                    'case_type_name' => trim($unit_division_case_type->case_type_name),
+                    'cts_unit_division_id'=> $unit_division_case_type->unit_division_id,
                     'code' => trim($unit_division_case_type->code),
-                    'category_name' => trim($unit_division_case_type->category_name),
+                    'category_name' => trim($unit_division_case_type->category_name)
                 ],
             );
+            // dd($ajira_unit_division_id);
+        }
+        // dd($response);
+    }
 
-         }
-         // dd($response);
-     }
-     
     public function get_LawCourts_units_division($unit_id, $ajira_unit_id, $ajira_subhead_id)
     {
-        $res=$this->guzzle("http://172.17.0.1/cts/Oauth2/ajira/get_unit_division_list/".$unit_id, []); 
-        $unit_divisions=json_decode($res);
-        foreach($unit_divisions as $unit_division)
+        $url=env('CTS_URL_END_POINT');
+        $res = $this->guzzle($url."Oauth2/ajira/get_unit_division_list/" . $unit_id, []);
+        $unit_divisions = json_decode($res);
+        if(!empty($unit_divisions) and is_array($unit_divisions))
+        foreach ($unit_divisions as $unit_division)
         {
             // dd($unit_division);
             // $table->string('name');
@@ -109,10 +110,10 @@ class CaseTypesTableSeeder extends Seeder
             // $table->integer('cts_division_id');
             // $table->integer('cts_unit_division_id');
 
- 
+
             $ajira_unit_division_id = UnitDivision::updateOrCreate(
                 [
-                   'cts_unit_division_id'   => $unit_division->unit_division_id,
+                    'cts_unit_division_id'   => $unit_division->unit_division_id,
                 ],
                 [
                     'cts_unit_division_id' => $unit_division->unit_division_id,
@@ -121,22 +122,24 @@ class CaseTypesTableSeeder extends Seeder
                     'cts_division_id' => $unit_division->division_id
                 ],
             );
-            $res=$this->get_LawCourts_units_division_case_types($unit_division->unit_division_id, $ajira_unit_division_id);
+            $res = $this->get_LawCourts_units_division_case_types($unit_division->unit_division_id, $ajira_unit_division_id);
         }
         // dd($response);
     }
 
 
-     public function get_LawCourts_units($subhead_id, $ajira_subhead_id)
+    public function get_LawCourts_units($subhead_id, $ajira_subhead_id)
     {
 
-        $res=$this->guzzle("http://172.17.0.1/cts/Oauth2/ajira/get_lawcourt_unit/".$subhead_id, []); 
-        $units=json_decode($res);
-        foreach($units as $unit)
-        { 
+        $url=env('CTS_URL_END_POINT');
+        $res = $this->guzzle($url."Oauth2/ajira/get_lawcourt_unit/" . $subhead_id, []);
+        $units = json_decode($res);
+        if(!empty($units) and is_array($units))
+        foreach ($units as $unit)
+        {
             $ajira_unit_id = Unit::updateOrCreate(
                 [
-                   'cts_unit_id'   => $unit->unit_id,
+                    'cts_unit_id'   => $unit->unit_id,
                 ],
                 [
                     'cts_unit_id' => $unit->unit_id,
@@ -144,23 +147,27 @@ class CaseTypesTableSeeder extends Seeder
                     'cts_subhead_id' => $unit->subhead_id
                 ],
             );
-            $res=$this->get_LawCourts_units_division($unit->unit_id, $ajira_unit_id, $ajira_subhead_id);
+            $res = $this->get_LawCourts_units_division($unit->unit_id, $ajira_unit_id, $ajira_subhead_id);
         }
         // dd($response);
     }
-     public function get_LawCourts()
+    public function get_LawCourts()
     {
 
-        $res=$this->guzzle("http://172.17.0.1/cts/Oauth2/ajira/get_law_courts", []); 
+        $url=env('CTS_URL_END_POINT');
+        $res = $this->guzzle($url."Oauth2/ajira/get_law_courts", []);
+        // echo $url."Oauth2/ajira/get_law_courts";
         // echo $res;
-        $subheads=json_decode($res);
-        foreach($subheads as $subhead)
+        // die;
+        $subheads = json_decode($res);
+        if(!empty($subheads) and is_array($subheads))
+        foreach ($subheads as $subhead)
         {
             // echo $subhead['subhead_id'].' === ';
             // var_dump($subhead);
             $subhead_id = Subhead::updateOrCreate(
                 [
-                   'cts_subhead_id'   => $subhead->subhead_id,
+                    'cts_subhead_id'   => $subhead->subhead_id,
                 ],
                 [
                     'cts_subhead_id' => $subhead->subhead_id,
@@ -168,7 +175,7 @@ class CaseTypesTableSeeder extends Seeder
                 ],
             );
 
-             $res=$this->get_LawCourts_units($subhead->subhead_id, $subhead_id);
+            $res = $this->get_LawCourts_units($subhead->subhead_id, $subhead_id);
         }
         // dd($response);
     }

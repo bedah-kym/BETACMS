@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('case_types', function (Blueprint $table) {
             $table->id();
-            $table->string('case_type_name');
+            $table->string('case_type_name', 250);
             $table->string('code');
             $table->string('category_name');
             $table->integer('cts_case_type_id'); 
             $table->integer('cts_case_category_id'); 
-            $table->integer('cts_case_category_id'); 
-            $table->integer('cts_case_category_id'); 
+            // $table->integer('cts_case_category_id'); 
+            // $table->integer('cts_case_category_id'); 
             $table->integer('cts_unit_div_case_type_id'); 
             $table->integer('cts_unit_division_id'); 
             $table->timestamps();
