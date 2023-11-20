@@ -50,6 +50,9 @@ class CaseTypesTableSeeder extends Seeder
     {
         $url=env('CTS_URL_END_POINT');
         $res = $this->guzzle($url."Oauth2/ajira/get_unit_division_case_categories/" . $unit_division_id, []);
+        // echo $url."Oauth2/ajira/get_law_courts";
+        echo $res;
+        // die;
         $unit_division_case_types = json_decode($res);
         if(!empty($unit_division_case_types) and is_array($unit_division_case_types))
         foreach ($unit_division_case_types as $unit_division_case_type)
@@ -100,6 +103,9 @@ class CaseTypesTableSeeder extends Seeder
     {
         $url=env('CTS_URL_END_POINT');
         $res = $this->guzzle($url."Oauth2/ajira/get_unit_division_list/" . $unit_id, []);
+        // echo $url."Oauth2/ajira/get_law_courts";
+        echo $res;
+        // die;
         $unit_divisions = json_decode($res);
         if(!empty($unit_divisions) and is_array($unit_divisions))
         foreach ($unit_divisions as $unit_division)
@@ -133,6 +139,9 @@ class CaseTypesTableSeeder extends Seeder
 
         $url=env('CTS_URL_END_POINT');
         $res = $this->guzzle($url."Oauth2/ajira/get_lawcourt_unit/" . $subhead_id, []);
+        // echo $url."Oauth2/ajira/get_law_courts";
+        echo $res;
+        // die;
         $units = json_decode($res);
         if(!empty($units) and is_array($units))
         foreach ($units as $unit)
@@ -157,7 +166,7 @@ class CaseTypesTableSeeder extends Seeder
         $url=env('CTS_URL_END_POINT');
         $res = $this->guzzle($url."Oauth2/ajira/get_law_courts", []);
         // echo $url."Oauth2/ajira/get_law_courts";
-        // echo $res;
+        echo $res;
         // die;
         $subheads = json_decode($res);
         if(!empty($subheads) and is_array($subheads))
