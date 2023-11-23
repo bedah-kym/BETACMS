@@ -328,7 +328,8 @@ class FrontendController extends Controller
         ]);
 
         // Handle file upload
-        if ($request->hasFile('files')) {
+        if ($request->hasFile('files')) 
+        {
             $files = $request->file('files');
             $law_court_id=$request->law_court;
             $unit_id=$request->unit;
@@ -336,7 +337,6 @@ class FrontendController extends Controller
             $code=$request->code;
             $case_index=$request->case_index;
             $year=$request->year;
-            // dd($files);
 
             $uploadPath = 'public/uploads'; // Define the path where you want to store files
 
@@ -364,6 +364,13 @@ class FrontendController extends Controller
                 $fileNameToStore = $filename.'_'.time().'.'.$extension;
                 // Upload Image
                 $path3 = $file->storeAs($path,$fileNameToStore);
+
+                $fileContents = file_get_contents($path3);
+
+                $desktopPath = env('ONE_DRIVE_FOLDER') . $fileNameToStore;
+
+                // Use file_put_contents to write the file to the specified path
+                file_put_contents($desktopPath, $fileContents);
 
                 // dd([
                 //     'cts_case_category_id'   => $category->cts_case_category_id,
