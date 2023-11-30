@@ -118,7 +118,7 @@
             // theme: 'fa5',
             initialPreview: [
                     @foreach($files as $f)
-                        '{{ asset('public/storage/'.str_replace('public','',$f->file_path)) }}',
+                        '{{ asset('public/storage/uploads/'.$f->file_name) }}',
                     @endforeach
                 ],
                 initialPreviewConfig: [

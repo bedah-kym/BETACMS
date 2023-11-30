@@ -13,6 +13,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 
 class FrontendController extends Controller
 {
@@ -126,6 +127,51 @@ class FrontendController extends Controller
             compact('module_title', 'module_name', 'module_path', 'module_icon', 'module_action', 'module_name_singular', 'lawcourts', 'years')
         );
     }
+
+
+      /**
+     * Show the form for creating a new resource.
+     *
+     * @return Response
+     */
+    public function search_case()
+    {
+        if (!Auth::check()) {
+            return redirect('/login');
+        }
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+
+        // dd($this->data);
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'Create';
+
+        $query_data = Subhead::get();
+      
+        $lawcourts = []; 
+
+        $years = [];
+
+        // $year=date('Y');
+        // for ($i=100;$i>0; $i-- ) {
+        //     $y[] = [
+        //         'id' => $i,
+        //         'text' => $i,
+        //     ];
+        // }
+
+        // $years= response()->json($y);
+
+        return view(
+            "ajira.cases.search_case",
+            compact('module_title', 'module_name', 'module_path', 'module_icon', 'module_action', 'module_name_singular', 'lawcourts', 'years')
+        );
+    }
+    
 
 
     /**
@@ -318,7 +364,21 @@ class FrontendController extends Controller
         return response()->json($$module_name);
     }
 
-
+    private function cleanFileName($file_name){ 
+        $file_ext = pathinfo($file_name, PATHINFO_EXTENSION); 
+        $file_name_str = pathinfo($file_name, PATHINFO_FILENAME); 
+         
+        // Replaces all spaces with hyphens. 
+        $file_name_str = str_replace(' ', '-', $file_name_str); 
+        // Removes special chars. 
+        $file_name_str = preg_replace('/[^A-Za-z0-9\-\_]/', '', $file_name_str); 
+        // Replaces multiple hyphens with single one. 
+        $file_name_str = preg_replace('/-+/', '-', $file_name_str); 
+         
+        $clean_file_name = $file_name_str.'.'.$file_ext; 
+         
+        return $clean_file_name; 
+    }
 
     public function upload_files(Request $request)
     {
@@ -352,8 +412,10 @@ class FrontendController extends Controller
             if (!Storage::exists($path)) {
                 Storage::makeDirectory($path);
             }
-            // dd(!Storage::exists($path));
-
+ 
+            $message="";
+            $ok=false;
+            // dd($path);
             foreach ($files as $file) {
                 $filenameWithExt = $file->getClientOriginalName();
                 //Get just filename
@@ -361,48 +423,67 @@ class FrontendController extends Controller
                 // Get just ext
                 $extension = $file->getClientOriginalExtension();
                 // Filename to store
-                $fileNameToStore = $filename.'_'.time().'.'.$extension;
+                $fileNameToStore = $this->cleanFileName($filename.'_'.time().'.'.$extension);
                 // Upload Image
-                $path3 = $file->storeAs($path,$fileNameToStore);
+                $storedPath = $file->storeAs($path,$fileNameToStore);
+                 // Get the original stored path
+                $originalPath = storage_path('app/' . $storedPath);
 
-                $fileContents = file_get_contents($path3);
+                // Set your desired destination path
+                $destinationPath = env('ONE_DRIVE_FOLDER').'/'.$subhead->name.'/'.$unit->name.'/'.$unit_division->name.'/'.$case_number;
 
-                $desktopPath = env('ONE_DRIVE_FOLDER') . $fileNameToStore;
+                // Check if the subfolder exists, if not, create it
+                if (!File::exists($destinationPath)) {
+                    File::makeDirectory($destinationPath, 0755, true); // Create the subfolder recursively
+                }
 
-                // Use file_put_contents to write the file to the specified path
-                file_put_contents($desktopPath, $fileContents);
+                // Copy the file to the destination path
+                $copied = File::copy($originalPath, $destinationPath . '/' . $fileNameToStore);
+                if ($copied) {
+                    // File copied successfully
+                    $ajira_unit_division_id = UploadedFile::create(
+                        [
+                            'cts_case_category_id'   => $category->cts_case_category_id,
+                            'cts_unit_division_id'=> $unit_division->cts_unit_division_id,
+                            'size' => filesize($file),
+                            'case_number' => $case_number,
+                            'file_path' => $originalPath,
+                            'file_name' => $subhead->name.'/'.$unit->name.'/'.$unit_division->name.'/'.$case_number.'/'.$fileNameToStore
+                        ],
+                    );
+                    $message='File uploaded and copied successfully.';
 
-                // dd([
-                //     'cts_case_category_id'   => $category->cts_case_category_id,
-                //     'cts_unit_division_id'=> $unit_division->cts_unit_division_id,
-                //     'size' => filesize($file),
-                //     'case_number' => $case_number,
-                //     'file_path' => $path3,
-                //     'file_name' => $fileNameToStore,
-                // ]);
-            
-                $ajira_unit_division_id = UploadedFile::create(
-                    [
-                        'cts_case_category_id'   => $category->cts_case_category_id,
-                        'cts_unit_division_id'=> $unit_division->cts_unit_division_id,
-                        'size' => filesize($file),
-                        'case_number' => $case_number,
-                        'file_path' => $path3,
-                        'file_name' => $fileNameToStore
-                    ],
-                );
-                // // Store each file in the storage folder (you can adjust the path as needed)
-                // $path3 = $file->store($path);
-                // echo $path3;
-                // // You can also perform additional actions with the uploaded file like storing its path in the database
-                // // For example: YourModel::create(['file_path' => $path]);
+                    $ok=true;
+                } else {
+                    // Failed to copy the file
+                    $message='Failed to copy the file.';
+
+                    $ok=false;
+                    break;
+                }
             }
 
-            return response()->json(['success'=>true, 'message'=> 'Files uploaded successfully!']);
+            if($ok)
+                return response()->json(['success'=>$ok, 'message'=> $message]);
+            else
+            {
+                $error = array(
+                    'validation_error' => array('files' => $message),
+                    'error' => $message,
+                    "errorkeys" => [],
+                    "initialPreview" => [],
+                    "initialPreviewConfig" => [],
+                    "initialPreviewThumbTags" => [],
+                    "append" => true,
+                );
+        
+                return response()->json($error);
+            }
+            
             // return redirect()->back()->with('success', 'Files uploaded successfully!');
         }
         $error = array(
-            'validation_error' => array('screennshot3' => 'You did not Select a file to upload'),
+            'validation_error' => array('files' => 'You did not Select a file to upload'),
             'error' => 'You did not Select a file to upload',
             "errorkeys" => [],
             "initialPreview" => [],

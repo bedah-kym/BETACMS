@@ -58,11 +58,11 @@
         </form>
 
         <x-slot name="extra">
-            @if (Route::has('register'))
+            <!-- @if (Route::has('register'))
             <p class="text-center text-gray-600 mt-4">
                 Do not have an account? <a href="{{ route('register') }}" class="underline hover:text-gray-900">Register</a>.
             </p>
-            @endif
+            @endif -->
         </x-slot>
     </x-auth-card>
 </x-auth-layout>

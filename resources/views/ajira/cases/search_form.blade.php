@@ -98,31 +98,21 @@
     </div>
 </div>
 
-<div class="row mb-3 file_upload_canvas hide" style="display: none;">
-    <div class="col-12"> 
-        <div class="form-group">
-            <label for="files[]">Select Files</label> <span class="text-danger">*</span>
-            <input class="form-control" type="file" name="files[]" id="files" required="" multiple="" accept="application/pdf" data-min-file-count="1">
-        </div>
-    </div>
-</div>
 
 
 <div class='form-group'>
-                                <label class='col-xs-5 control-label' for="submit"> </label>
-                                <div class='col-md-12' style="text-align: center;">
-                                    <button type="button" name="send_request2" id="send_request2" disabled class="btn btn-md btn-primary link_button large file_upload_button"><i class="fa fa-save"></i> Upload Files</button>
-                                </div>
-                            </div> 
+    <label class='col-xs-5 control-label' for="submit"> </label>
+    <div class='col-md-12' style="text-align: center;">
+        <button type="button" name="send_request2" id="send_request2" disabled class="btn btn-md btn-primary link_button large file_upload_button"><i class="fa fa-save"></i> Upload Files</button>
+    </div>
+</div> 
 <!-- Select2 Library -->
 <x-library.select2 />
 
 @push('after-styles')
 
-<!-- the fileinput plugin styling CSS file -->
-<!-- <link href="{{asset('fileinput/css/fileinput.min.css')}}" /> -->
-<link href="https://cdn.jsdelivr.net/gh/kartik-v/bootstrap-fileinput@5.5.0/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
-
+<!-- the fileinput plugin styling CSS file --> 
+<link href="{{asset('fileinput/css/fileinput.min.css')}}" />
 
 <style>
     .note-editor.note-frame :after {

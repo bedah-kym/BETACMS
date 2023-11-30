@@ -30,6 +30,7 @@ Route::get('dashboard', 'App\Http\Controllers\Frontend\FrontendController@index'
 Route::group(['namespace' => 'App\Http\Controllers\Frontend', 'as' => 'frontend.'], function () {
     Route::get('/', 'FrontendController@index')->name('index');
     Route::get('/upload', 'FrontendController@upload')->name('upload');
+    Route::get('/search_case', 'FrontendController@search_case')->name('search_case');
     Route::get('home', 'FrontendController@index')->name('home');
     Route::get('privacy', 'FrontendController@privacy')->name('privacy');
     Route::get('terms', 'FrontendController@terms')->name('terms');
@@ -43,7 +44,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Frontend', 'as' => 'frontend.
 
     Route::get('cases/view_files/{case_number}', ['as' => "cases.view_files", 'uses' => "FrontendController@view_files"]);
 
-
+    
 
     Route::group(['middleware' => ['auth']], function () {
         /*

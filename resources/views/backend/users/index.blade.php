@@ -18,7 +18,7 @@
             </x-slot>
             <x-slot name="toolbar">
                 @can('add_'.$module_name)
-                <x-buttons.create route='{{ route("frontend.upload") }}' title="{{__('Create')}} {{ ucwords(Str::singular($module_name)) }}" >Upload Cases</x-buttons.create>
+                <x-buttons.create route='{{ route("frontend.upload") }}' title="{{__('Create')}} {{ ucwords(Str::singular($module_name)) }}" >Upload Complete Case Files</x-buttons.create>
                 @endcan
 
                 <!-- @can('restore_'.$module_name)
