@@ -36,6 +36,7 @@ class CasesIndex extends Component
                 'unit_divisions.name as division_name',
                 'units.name as unit_name', 
                 DB::raw('COUNT(*) as uploaded_files'),  
+                DB::raw('max(uploaded_files.created_at) as created_at'),  
             )
             ->where('case_number', 'like', $searchTerm)
             ->where('units.cts_subhead_id','=', env('DEFAULT_SUBHEAD_ID'))

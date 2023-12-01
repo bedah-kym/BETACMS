@@ -8,43 +8,48 @@
                     <thead>
                         <tr>
                             <th>Case Number</th>
-                            <th>Case Type</th>
-                            <th>Division</th>
                             <th>Station</th>
-                            <th>Number of Files</th>
+                            <th>Division</th>
+                            <th>Case Type</th>
+                            <th>Date</th>
+                            <th>Files</th>
                             <th class="text-end">{{ __('labels.backend.action') }}</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($cases as $case)
-                        
+
                         <tr>
-                            <td>
+                            <td nowrap>
                                 <strong>
                                     <a href="{{route('frontend.cases.view_files', $case->case_number)}}">
                                         {{ $case->case_number }}
                                     </a>
                                 </strong>
                             </td>
+
                             <td>
-                                {{$case->category_code}} -  {{$case->category_name}}
+                                {{$case->unit_name}}
                             </td>
                             <td>
-                            {{$case->division_name}} 
+                                {{$case->division_name}}
                             </td>
                             <td>
-                            {{$case->unit_name}} 
+                                {{$case->category_name}}
+                            </td>
+                            <td nowrap>
+                                {{$case->created_at}}
 
                             </td>
                             <td>
-                            {{$case->uploaded_files}} 
+                                {{$case->uploaded_files}}
 
                             </td>
 
-                            
+
 
                             <td class="text-end">
-                                <a href="" class="btn btn-success btn-sm mt-1" data-toggle="tooltip" title="{{__('labels.backend.show')}}"><i class="fas fa-desktop"></i></a>
+                                <a href="{{route('frontend.cases.view_files', $case->case_number)}}" class="btn btn-success btn-sm mt-1" data-toggle="tooltip" title="{{__('labels.backend.show')}}"><i class="fas fa-desktop"></i></a>
                             </td>
                         </tr>
                         @endforeach
